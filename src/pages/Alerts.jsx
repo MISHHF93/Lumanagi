@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Alert as AlertEntity, AdminLog, User } from "@/api/entities";
+import { Alert as AlertEntity, AdminLog } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
 import CommandModal from "../components/CommandModal";
 import { Bell, CheckCircle2, AlertTriangle, XCircle, Clock, Flag } from "lucide-react";
@@ -8,31 +8,27 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAppStore } from "@/store/useAppStore";
 
 export default function Alerts() {
   const [alerts, setAlerts] = useState([]);
   const [filter, setFilter] = useState("all");
-  const [user, setUser] = useState(null);
+  const { user, fetchUser } = useAppStore((state) => ({
+    user: state.user,
+    fetchUser: state.fetchUser
+  }));
   const [processing, setProcessing] = useState(null);
 
   useEffect(() => {
     loadAlerts();
-    loadUser();
-  }, []);
+    if (!user) {
+      fetchUser();
+    }
+  }, [fetchUser, user]);
 
   const loadAlerts = async () => {
     const data = await AlertEntity.list("-created_date");
     setAlerts(data);
-  };
-
-  const loadUser = async () => {
-    try {
-      const currentUser = await User.me();
-      setUser(currentUser);
-    } catch (error) {
-      console.log("User not authenticated or error fetching user:", error);
-      // Optionally handle unauthenticated state, e.g., redirect to login
-    }
   };
 
   const resolveAlert = async (alertId) => {

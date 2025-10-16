@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
 import { AdminLog } from "@/api/entities";
+import { useAppStore } from "@/store/useAppStore";
 
 const DEFAULT_SETTINGS = {
   // Personalization
@@ -50,7 +51,11 @@ const DEFAULT_SETTINGS = {
 };
 
 export default function UserSettings() {
-  const [user, setUser] = useState(null);
+  const { user, fetchUser, setUser } = useAppStore((state) => ({
+    user: state.user,
+    fetchUser: state.fetchUser,
+    setUser: state.setUser
+  }));
   const [originalSettings, setOriginalSettings] = useState(null);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [hasChanges, setHasChanges] = useState(false);
@@ -63,30 +68,23 @@ export default function UserSettings() {
   });
 
   useEffect(() => {
-    loadUser();
+    fetchUser();
     loadSessions();
     loadAIStats();
-  }, []);
+  }, [fetchUser]);
 
-  const loadUser = async () => {
-    try {
-      const currentUser = await User.me();
-      setUser(currentUser);
-      
-      // Load user settings from user data or use defaults
-      const userSettings = currentUser.settings 
-        ? { ...DEFAULT_SETTINGS, ...currentUser.settings }
-        : { ...DEFAULT_SETTINGS };
-      
-      setSettings(userSettings);
-      setOriginalSettings(userSettings);
-      
-      // Calculate security score with loaded settings
-      calculateSecurityScore(currentUser, userSettings);
-    } catch (error) {
-      console.log("User not authenticated", error);
+  useEffect(() => {
+    if (!user) {
+      return;
     }
-  };
+    const userSettings = user.settings
+      ? { ...DEFAULT_SETTINGS, ...user.settings }
+      : { ...DEFAULT_SETTINGS };
+
+    setSettings(userSettings);
+    setOriginalSettings(userSettings);
+    calculateSecurityScore(user, userSettings);
+  }, [user]);
 
   const loadSessions = () => {
     // Mock session data
@@ -148,7 +146,8 @@ export default function UserSettings() {
     setSaving(true);
     try {
       // Save to user entity
-      await User.updateMyUserData({ settings });
+      const updated = await User.update({ settings });
+      setUser(updated);
       
       // Log settings change
       if (originalSettings) {

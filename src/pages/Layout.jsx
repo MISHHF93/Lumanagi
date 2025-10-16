@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { User } from "@/api/entities";
@@ -59,6 +59,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAppStore } from "@/store/useAppStore";
 
 const navigationCategories = [
   {
@@ -337,12 +338,17 @@ const navigationCategories = [
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
-  const [user, setUser] = useState(null);
+  const { user, fetchUser, setUser, setUserStatus } = useAppStore((state) => ({
+    user: state.user,
+    fetchUser: state.fetchUser,
+    setUser: state.setUser,
+    setUserStatus: state.setUserStatus
+  }));
   const [commandOpen, setCommandOpen] = useState(false);
   const [collapsedGroups, setCollapsedGroups] = useState({});
 
-  React.useEffect(() => {
-    loadUser();
+  useEffect(() => {
+    fetchUser();
     // Load collapsed state from localStorage
     const saved = localStorage.getItem('sidebar-collapsed');
     if (saved) {
@@ -352,19 +358,12 @@ export default function Layout({ children, currentPageName }) {
         console.error("Failed to parse sidebar state", e);
       }
     }
-  }, []);
-
-  const loadUser = async () => {
-    try {
-      const currentUser = await User.me();
-      setUser(currentUser);
-    } catch (error) {
-      console.log("User not authenticated");
-    }
-  };
+  }, [fetchUser]);
 
   const handleLogout = async () => {
     await User.logout();
+    setUser(null);
+    setUserStatus('idle');
   };
 
   const toggleGroup = (groupId) => {

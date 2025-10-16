@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { ContractMetric, TokenAnalytic, Market, OracleFeed, Alert, AdminLog, User } from "@/api/entities";
+import { ContractMetric, TokenAnalytic, Market, OracleFeed, Alert, AdminLog } from "@/api/entities";
 import MetricCard from "../components/MetricCard";
 import GlassCard from "../components/GlassCard";
 import StatusBadge from "../components/StatusBadge";
@@ -24,19 +24,25 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAppStore } from "@/store/useAppStore";
 
 export default function Dashboard() {
   const [contracts, setContracts] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [tokenData, setTokenData] = useState([]);
-  const [user, setUser] = useState(null);
+  const { user, fetchUser } = useAppStore((state) => ({
+    user: state.user,
+    fetchUser: state.fetchUser
+  }));
   const [viewMode, setViewMode] = useState("overview"); // overview | mission-control
 
   useEffect(() => {
     loadData();
-    loadUser();
-  }, []);
+    if (!user) {
+      fetchUser();
+    }
+  }, [fetchUser, user]);
 
   const loadData = async () => {
     const [contractsData, alertsData, logsData, tokenDataResult] = await Promise.all([
@@ -50,15 +56,6 @@ export default function Dashboard() {
     setAlerts(alertsData);
     setRecentActivity(logsData);
     setTokenData(tokenDataResult);
-  };
-
-  const loadUser = async () => {
-    try {
-      const currentUser = await User.me();
-      setUser(currentUser);
-    } catch (error) {
-      console.log("User not authenticated");
-    }
   };
 
   const totalInvocations = contracts.reduce((sum, c) => sum + (c.daily_invocations || 0), 0);
