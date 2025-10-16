@@ -1,7 +1,7 @@
 # Lumangi App
 
 
-This app was created automatically by Base44.
+This app was ai generated.
 It's a Vite+React app that communicates with the VITE API.
 
 ## Running the app
