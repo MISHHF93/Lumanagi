@@ -341,6 +341,22 @@ export default function Layout({ children, currentPageName }) {
   const [commandOpen, setCommandOpen] = useState(false);
   const [collapsedGroups, setCollapsedGroups] = useState({});
 
+  const normalizePath = React.useCallback((path) => {
+    if (!path || typeof path !== "string") return "/";
+    const trimmed = path.trim();
+    if (!trimmed) return "/";
+    if (trimmed === "/") return "/";
+    return trimmed.endsWith("/") ? trimmed.slice(0, -1) : trimmed;
+  }, []);
+
+  const activePath = React.useMemo(() => {
+    const derivedFromCurrentPage = currentPageName ? createPageUrl(currentPageName) : null;
+    const candidate = location.pathname === "/" && derivedFromCurrentPage
+      ? derivedFromCurrentPage
+      : location.pathname;
+    return normalizePath(candidate);
+  }, [currentPageName, location.pathname, normalizePath]);
+
   React.useEffect(() => {
     loadUser();
     // Load collapsed state from localStorage
@@ -674,7 +690,7 @@ export default function Layout({ children, currentPageName }) {
                       <SidebarGroupContent>
                         <SidebarMenu className="space-y-1">
                           {category.items.filter(item => hasAccess(item)).map((item) => {
-                            const isActive = location.pathname === item.url;
+                            const isActive = normalizePath(item.url) === activePath;
                             const statusConfig = item.liveStatus ? getStatusConfig(item.liveStatus) : null;
                             
                             return (
