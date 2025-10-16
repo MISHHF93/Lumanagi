@@ -18,16 +18,30 @@ export default function SecurityPosture() {
   const loadData = async () => {
     const [incidentsData, alertsData] = await Promise.all([
       SecurityIncident.list("-created_date", 50),
-      AlertEntity.filter({ is_resolved: false }, "-created_date")
+      AlertEntity.list("-triggered_at", 50)
     ]);
+
     setIncidents(incidentsData);
-    setAlerts(alertsData);
+    setAlerts(alertsData.filter(alert => !alert.acknowledged && !alert.is_resolved));
   };
 
-  const activeIncidents = incidents.filter(i => !['resolved', 'closed'].includes(i.status));
-  const criticalIncidents = incidents.filter(i => i.severity === 'critical' && !['resolved', 'closed'].includes(i.status));
-  const avgResponseTime = incidents.length > 0 
-    ? incidents.reduce((sum, i) => sum + (i.response_time_minutes || 0), 0) / incidents.length 
+  const resolveStatus = (incident) => {
+    if (incident.status) return incident.status;
+    return incident.resolved ? 'resolved' : 'detected';
+  };
+
+  const activeIncidents = incidents.filter((incident) => {
+    const status = resolveStatus(incident);
+    return !['resolved', 'closed'].includes(status);
+  });
+
+  const criticalIncidents = incidents.filter((incident) => {
+    const status = resolveStatus(incident);
+    return incident.severity === 'critical' && !['resolved', 'closed'].includes(status);
+  });
+
+  const avgResponseTime = incidents.length > 0
+    ? incidents.reduce((sum, incident) => sum + (incident.response_time_minutes ?? 0), 0) / incidents.length
     : 0;
 
   const incidentTrend = incidents.slice(0, 10).reverse().map((item, i) => ({
@@ -54,6 +68,16 @@ export default function SecurityPosture() {
       closed: "bg-white/10 border-white/20 text-white/70"
     };
     return colors[status] || colors.detected;
+  };
+
+  const formatTimestamp = (value) => {
+    if (!value) return 'N/A';
+    try {
+      return format(new Date(value), 'MMM d, HH:mm');
+    } catch (error) {
+      console.warn('Unable to format timestamp', value, error);
+      return 'N/A';
+    }
   };
 
   return (
@@ -175,71 +199,81 @@ export default function SecurityPosture() {
         <div className="p-6">
           <h3 className="text-xl font-bold text-white mb-6">Security Incidents (ISO 27043 Digital Forensics)</h3>
           <div className="space-y-4">
-            {incidents.slice(0, 10).map((incident) => (
-              <div key={incident.id} className="p-6 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <AlertTriangle className={`w-5 h-5 ${
-                        incident.severity === 'critical' ? 'text-red-400' :
-                        incident.severity === 'high' ? 'text-orange-400' :
-                        'text-yellow-400'
-                      }`} />
-                      <h4 className="text-lg font-semibold text-white">
-                        {incident.incident_type.replace(/_/g, ' ').toUpperCase()}
-                      </h4>
-                    </div>
-                    <p className="text-white/70 mb-3">Incident ID: {incident.incident_id}</p>
-                    <div className="flex flex-wrap items-center gap-2 mb-3">
-                      <Badge variant="outline" className={getSeverityColor(incident.severity)}>
-                        {incident.severity}
-                      </Badge>
-                      <Badge variant="outline" className={getStatusColor(incident.status)}>
-                        {incident.status.replace(/_/g, ' ')}
-                      </Badge>
-                      <Badge variant="outline" className="bg-white/5 border-white/20 text-white/70 text-xs">
-                        {incident.detection_method?.replace(/_/g, ' ')}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
+            {incidents.slice(0, 10).map((incident) => {
+              const status = resolveStatus(incident);
+              const incidentId = incident.incident_id || incident.id;
+              const detectionMethod = incident.detection_method?.replace(/_/g, ' ');
+              const affectedSystems = incident.affected_systems || incident.affected_system;
+              const timestamp = incident.detected_at || incident.created_date || incident.created_at;
 
-                {incident.affected_systems && (
-                  <div className="mb-4 p-4 rounded-lg bg-white/5">
-                    <p className="text-white/60 text-xs mb-1">Affected Systems</p>
-                    <p className="text-white text-sm">{incident.affected_systems}</p>
+              return (
+                <div key={incident.id} className="p-6 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <AlertTriangle className={`w-5 h-5 ${
+                          incident.severity === 'critical' ? 'text-red-400' :
+                          incident.severity === 'high' ? 'text-orange-400' :
+                          'text-yellow-400'
+                        }`} />
+                        <h4 className="text-lg font-semibold text-white">
+                          {incident.incident_type.replace(/_/g, ' ').toUpperCase()}
+                        </h4>
+                      </div>
+                      <p className="text-white/70 mb-3">Incident ID: {incidentId}</p>
+                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <Badge variant="outline" className={getSeverityColor(incident.severity)}>
+                          {incident.severity}
+                        </Badge>
+                        <Badge variant="outline" className={getStatusColor(status)}>
+                          {status.replace(/_/g, ' ')}
+                        </Badge>
+                        {detectionMethod && (
+                          <Badge variant="outline" className="bg-white/5 border-white/20 text-white/70 text-xs">
+                            {detectionMethod}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                )}
 
-                <div className="grid md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <p className="text-white/60 mb-1">Detected</p>
-                    <p className="text-white font-medium">
-                      {format(new Date(incident.detected_at || incident.created_date), 'MMM d, HH:mm')}
-                    </p>
-                  </div>
-                  {incident.response_time_minutes && (
-                    <div>
-                      <p className="text-white/60 mb-1">Response Time</p>
-                      <p className="text-white font-medium">{incident.response_time_minutes} min</p>
+                  {affectedSystems && (
+                    <div className="mb-4 p-4 rounded-lg bg-white/5">
+                      <p className="text-white/60 text-xs mb-1">Affected Systems</p>
+                      <p className="text-white text-sm">{affectedSystems}</p>
                     </div>
                   )}
-                  {incident.iso_reference && (
+
+                  <div className="grid md:grid-cols-3 gap-4 text-sm">
                     <div>
-                      <p className="text-white/60 mb-1">ISO Control</p>
-                      <p className="text-white font-medium font-mono text-xs">{incident.iso_reference}</p>
+                      <p className="text-white/60 mb-1">Detected</p>
+                      <p className="text-white font-medium">
+                        {formatTimestamp(timestamp)}
+                      </p>
+                    </div>
+                    {typeof incident.response_time_minutes === 'number' && (
+                      <div>
+                        <p className="text-white/60 mb-1">Response Time</p>
+                        <p className="text-white font-medium">{incident.response_time_minutes} min</p>
+                      </div>
+                    )}
+                    {incident.iso_reference && (
+                      <div>
+                        <p className="text-white/60 mb-1">ISO Control</p>
+                        <p className="text-white font-medium font-mono text-xs">{incident.iso_reference}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {incident.root_cause && (
+                    <div className="mt-4 p-4 rounded-lg bg-white/5 border border-white/10">
+                      <p className="text-white/60 text-xs mb-1">Root Cause</p>
+                      <p className="text-white text-sm">{incident.root_cause}</p>
                     </div>
                   )}
                 </div>
-
-                {incident.root_cause && (
-                  <div className="mt-4 p-4 rounded-lg bg-white/5 border border-white/10">
-                    <p className="text-white/60 text-xs mb-1">Root Cause</p>
-                    <p className="text-white text-sm">{incident.root_cause}</p>
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </GlassCard>

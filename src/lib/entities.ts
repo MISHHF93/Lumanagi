@@ -69,6 +69,10 @@ export interface Alert extends BaseEntity {
   acknowledged_by?: string
   triggered_at: string
   category: string
+  alert_type?: string
+  is_resolved?: boolean
+  resolved_at?: string
+  notification_sent?: boolean
 }
 
 export interface ComplianceMetric extends BaseEntity {
@@ -82,11 +86,19 @@ export interface ComplianceMetric extends BaseEntity {
 
 export interface SecurityIncident extends BaseEntity {
   incident_type: string
-  severity: 'low' | 'medium' | 'high'
+  severity: 'low' | 'medium' | 'high' | 'critical'
   detected_at: string
   resolved: boolean
   affected_system: string
   summary: string
+  incident_id?: string
+  status?: 'detected' | 'investigating' | 'contained' | 'resolved' | 'closed'
+  detection_method?: string
+  affected_systems?: string
+  response_time_minutes?: number
+  iso_reference?: string
+  root_cause?: string
+  created_date?: string
 }
 
 export interface TrustBoundaryEvent extends BaseEntity {
@@ -363,8 +375,38 @@ export const entityRegistry: EntityRegistry = {
         severity: 'high',
         description: 'Latency exceeded 500ms for oracle feed Market Price Oracle',
         acknowledged: false,
+        alert_type: 'oracle_delay',
         triggered_at: now(),
         category: 'oracles',
+        notification_sent: false,
+        created_at: now()
+      },
+      {
+        id: 'alert-2',
+        title: 'Unauthorized Admin Login Blocked',
+        severity: 'critical',
+        description: 'Repeated credential stuffing attempt blocked by zero-trust controls',
+        acknowledged: false,
+        alert_type: 'security',
+        triggered_at: now(),
+        category: 'security',
+        notification_sent: true,
+        is_resolved: false,
+        created_at: now()
+      },
+      {
+        id: 'alert-3',
+        title: 'Smart Contract Deployment Audit Required',
+        severity: 'medium',
+        description: 'Guardrails flagged missing audit trail on latest governance contract rollout',
+        acknowledged: true,
+        acknowledged_by: 'ari@lumanagi.ai',
+        alert_type: 'contract_error',
+        triggered_at: now(),
+        category: 'contracts',
+        notification_sent: true,
+        is_resolved: true,
+        resolved_at: now(),
         created_at: now()
       }
     ]
@@ -399,15 +441,60 @@ export const entityRegistry: EntityRegistry = {
   SecurityIncident: {
     endpoint: '/security/incidents',
     storageKey: 'security-incidents',
+    sortKey: 'created_date',
     seedData: [
       {
         id: 'incident-1',
-        incident_type: 'Unauthorized Access Attempt',
+        incident_type: 'unauthorized_console_access',
+        severity: 'critical',
+        detected_at: now(),
+        created_date: now(),
+        resolved: false,
+        affected_system: 'Guardian Control Plane',
+        affected_systems: 'Guardian Control Plane, Command Center',
+        summary: 'Blocked unauthorized console login from untrusted network',
+        incident_id: 'INC-4521',
+        status: 'investigating',
+        detection_method: 'behavioral_analytics',
+        response_time_minutes: 12,
+        iso_reference: 'ISO 27035-1 7.4',
+        root_cause: 'Credential stuffing attempt detected and mitigated',
+        created_at: now()
+      },
+      {
+        id: 'incident-2',
+        incident_type: 'anomalous_validator_latency',
+        severity: 'high',
+        detected_at: now(),
+        created_date: now(),
+        resolved: true,
+        affected_system: 'Validator Cluster East',
+        affected_systems: 'Validator Cluster East',
+        summary: 'Latency spike on validator nodes triggered failover to backup region',
+        incident_id: 'INC-4518',
+        status: 'contained',
+        detection_method: 'telemetry_monitoring',
+        response_time_minutes: 8,
+        iso_reference: 'ISO 27002 A.17.1.2',
+        root_cause: 'Network congestion due to upstream provider maintenance',
+        created_at: now()
+      },
+      {
+        id: 'incident-3',
+        incident_type: 'policy_misconfiguration',
         severity: 'medium',
         detected_at: now(),
+        created_date: now(),
         resolved: true,
-        affected_system: 'Guardian Control Plane',
-        summary: 'Blocked unauthorized console login from untrusted network',
+        affected_system: 'AI Policy Engine',
+        affected_systems: 'AI Policy Engine',
+        summary: 'New model deployment lacked mandatory guardrail policy and was rolled back',
+        incident_id: 'INC-4510',
+        status: 'resolved',
+        detection_method: 'change_management',
+        response_time_minutes: 18,
+        iso_reference: 'ISO 42001 8.3',
+        root_cause: 'Deployment checklist missed policy sync step',
         created_at: now()
       }
     ]
