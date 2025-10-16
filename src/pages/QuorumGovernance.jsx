@@ -1,4 +1,3 @@
-import React from "react";
 import { Users, CheckCircle2, XCircle, Clock, Shield } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";

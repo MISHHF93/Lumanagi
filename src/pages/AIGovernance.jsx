@@ -1,4 +1,3 @@
-import React from "react";
 import { Brain, Shield, FileText, CheckCircle2, AlertTriangle } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";

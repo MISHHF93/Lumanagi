@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { User } from "@/api/entities";
 import { Shield, Palette, Bell, User as UserIcon, Smartphone, Key, Globe, Save, Camera, Monitor, Sun, Moon, LogOut, MapPin, Download, Upload, Brain, Zap, AlertTriangle } from "lucide-react";
 import GlassCard from "../components/GlassCard";
@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
 import { AdminLog } from "@/api/entities";
+import { useAuth } from "@/contexts/AuthProvider";
 
 const DEFAULT_SETTINGS = {
   // Personalization
@@ -50,7 +51,8 @@ const DEFAULT_SETTINGS = {
 };
 
 export default function UserSettings() {
-  const [user, setUser] = useState(null);
+  const { user: authUser, setUser: setAuthUser } = useAuth();
+  const [profile, setProfile] = useState(null);
   const [originalSettings, setOriginalSettings] = useState(null);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [hasChanges, setHasChanges] = useState(false);
@@ -63,30 +65,23 @@ export default function UserSettings() {
   });
 
   useEffect(() => {
-    loadUser();
     loadSessions();
     loadAIStats();
   }, []);
 
-  const loadUser = async () => {
-    try {
-      const currentUser = await User.me();
-      setUser(currentUser);
-      
-      // Load user settings from user data or use defaults
-      const userSettings = currentUser.settings 
-        ? { ...DEFAULT_SETTINGS, ...currentUser.settings }
-        : { ...DEFAULT_SETTINGS };
-      
-      setSettings(userSettings);
-      setOriginalSettings(userSettings);
-      
-      // Calculate security score with loaded settings
-      calculateSecurityScore(currentUser, userSettings);
-    } catch (error) {
-      console.log("User not authenticated", error);
-    }
-  };
+  useEffect(() => {
+    if (!authUser) return;
+
+    setProfile(authUser);
+
+    const userSettings = authUser.settings
+      ? { ...DEFAULT_SETTINGS, ...authUser.settings }
+      : { ...DEFAULT_SETTINGS };
+
+    setSettings(userSettings);
+    setOriginalSettings(userSettings);
+    calculateSecurityScore(authUser, userSettings);
+  }, [authUser]);
 
   const loadSessions = () => {
     // Mock session data
@@ -162,7 +157,7 @@ export default function UserSettings() {
               action: `Updated settings: ${changedSettings.join(', ')}`,
               endpoint: "/settings",
               status: "success",
-              user_role: user?.role || 'unknown',
+              user_role: profile?.role || 'unknown',
               details: JSON.stringify({ 
                 changed: changedSettings,
                 newValues: changedSettings.reduce((acc, key) => {
@@ -219,8 +214,8 @@ export default function UserSettings() {
   };
 
   const canAccessTab = (tabName) => {
-    if (!user) return false;
-    
+    if (!profile) return false;
+
     const rolePermissions = {
       admin: ['personalization', 'security', 'notifications', 'ai'],
       operator: ['personalization', 'security', 'notifications', 'ai'],
@@ -229,11 +224,11 @@ export default function UserSettings() {
       user: ['personalization', 'notifications'],
       guest: ['personalization']
     };
-    
-    return rolePermissions[user.role]?.includes(tabName) || false;
+
+    return rolePermissions[profile.role]?.includes(tabName) || false;
   };
 
-  if (!user || !settings) {
+  if (!profile || !settings) {
     return (
       <div className="p-8 flex items-center justify-center min-h-screen">
         <div className="text-white/60">Loading user settings...</div>
@@ -260,7 +255,7 @@ export default function UserSettings() {
                       <img src={settings.profilePicture} alt="Profile" className="w-full h-full rounded-full object-cover" />
                     ) : (
                       <span className="text-white text-3xl font-bold">
-                        {user?.full_name?.charAt(0) || 'U'}
+                        {profile?.full_name?.charAt(0) || profile?.name?.charAt(0) || 'U'}
                       </span>
                     )}
                   </div>
@@ -268,10 +263,10 @@ export default function UserSettings() {
                     <Camera className="w-4 h-4 text-white" />
                   </button>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-1">{user?.full_name || 'User'}</h3>
-                <p className="text-sm text-white/60 mb-3">{user?.email}</p>
+                <h3 className="text-xl font-bold text-white mb-1">{profile?.full_name || profile?.name || 'User'}</h3>
+                <p className="text-sm text-white/60 mb-3">{profile?.email}</p>
                 <Badge variant="outline" className="bg-[#3B82F6]/20 text-[#3B82F6] border-[#3B82F6]/30 mb-2">
-                  {user?.role || 'user'}
+                  {profile?.role || 'user'}
                 </Badge>
                 
                 {canAccessTab('security') && (
@@ -291,7 +286,7 @@ export default function UserSettings() {
               <div className="space-y-3">
                 <div className="p-3 rounded-lg bg-white/5">
                   <p className="text-xs text-white/60 mb-1">Member Since</p>
-                  <p className="text-white font-semibold">{user?.created_date ? new Date(user.created_date).toLocaleDateString() : 'N/A'}</p>
+                  <p className="text-white font-semibold">{profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'}</p>
                 </div>
                 <div className="p-3 rounded-lg bg-white/5">
                   <p className="text-xs text-white/60 mb-1">Last Login</p>
@@ -504,7 +499,7 @@ export default function UserSettings() {
                         checked={settings.mfaEnabled || false}
                         onCheckedChange={(checked) => {
                           handleSettingChange('mfaEnabled', checked);
-                          calculateSecurityScore(user, { ...settings, mfaEnabled: checked });
+                          calculateSecurityScore(profile, { ...settings, mfaEnabled: checked });
                         }}
                       />
                     </div>
@@ -691,7 +686,7 @@ export default function UserSettings() {
                         </div>
                         <div>
                           <p className="text-white font-semibold">Email</p>
-                          <p className="text-sm text-white/60">{user?.email}</p>
+                          <p className="text-sm text-white/60">{profile?.email}</p>
                         </div>
                       </div>
                       <Switch
@@ -865,7 +860,7 @@ export default function UserSettings() {
                     />
                   </div>
 
-                  {user?.role === 'admin' && (
+                  {profile?.role === 'admin' && (
                     <div className="p-4 rounded-lg bg-white/5 border border-white/10">
                       <Label className="text-white mb-3 block">AI Model Selection</Label>
                       <Select defaultValue="gpt-4-turbo">

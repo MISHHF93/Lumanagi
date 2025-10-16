@@ -1,61 +1,11 @@
-
-import React, { useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { User } from "@/api/entities";
-import {
-  LayoutDashboard,
-  FileCode2,
-  Coins,
-  TrendingUp,
-  Radio,
-  FileText,
-  Bell,
-  LogOut,
-  Shield,
-  Activity,
-  Lock,
-  Eye,
-  ChevronRight,
-  ChevronDown,
-  Zap,
-  Brain,
-  Scale,
-  Database,
-  Workflow,
-  Settings,
-  UserCheck,
-  FileCheck,
-  Target,
-  Lightbulb,
-  GitBranch,
-  Download,
-  Users,
-  Calendar,
-  Key,
-  Server,
-  Sliders,
-  Clock,
-  Search,
-  MessageSquare,
-  Menu,
-  X,
-  Sparkles,
-  CheckCircle2
-} from "lucide-react";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarHeader,
-  SidebarFooter,
-  SidebarProvider,
-  SidebarTrigger
-} from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/AuthProvider";
+import { useUIStore } from "@/store/uiStore";
+import CommandModal from "../components/CommandModal";
+import { LayoutDashboard, FileCode2, Coins, TrendingUp, Radio, FileText, Bell, LogOut, Shield, Activity, Lock, Eye, ChevronRight, ChevronDown, Zap, Brain, Scale, Database, Workflow, Settings, UserCheck, FileCheck, Target, Lightbulb, GitBranch, Download, Users, Calendar, Key, Server, Sliders, Clock, Search, MessageSquare, Menu, X, Sparkles, CheckCircle2 } from "lucide-react";
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
@@ -337,11 +287,14 @@ const navigationCategories = [
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
-  const [user, setUser] = useState(null);
-  const [commandOpen, setCommandOpen] = useState(false);
-  const [collapsedGroups, setCollapsedGroups] = useState({});
+  const { user, logout } = useAuth();
+  const commandOpen = useUIStore((state) => state.commandPaletteOpen);
+  const setCommandOpen = useUIStore((state) => state.setCommandPaletteOpen);
+  const collapsedGroups = useUIStore((state) => state.collapsedGroups);
+  const toggleSidebarGroup = useUIStore((state) => state.toggleSidebarGroup);
+  const loadSidebarState = useUIStore((state) => state.loadSidebarState);
 
-  const normalizePath = React.useCallback((path) => {
+  const normalizePath = useCallback((path) => {
     if (!path || typeof path !== "string") return "/";
     const trimmed = path.trim();
     if (!trimmed) return "/";
@@ -349,7 +302,7 @@ export default function Layout({ children, currentPageName }) {
     return trimmed.endsWith("/") ? trimmed.slice(0, -1) : trimmed;
   }, []);
 
-  const activePath = React.useMemo(() => {
+  const activePath = useMemo(() => {
     const derivedFromCurrentPage = currentPageName ? createPageUrl(currentPageName) : null;
     const candidate = location.pathname === "/" && derivedFromCurrentPage
       ? derivedFromCurrentPage
@@ -357,38 +310,12 @@ export default function Layout({ children, currentPageName }) {
     return normalizePath(candidate);
   }, [currentPageName, location.pathname, normalizePath]);
 
-  React.useEffect(() => {
-    loadUser();
-    // Load collapsed state from localStorage
-    const saved = localStorage.getItem('sidebar-collapsed');
-    if (saved) {
-      try {
-        setCollapsedGroups(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse sidebar state", e);
-      }
-    }
-  }, []);
-
-  const loadUser = async () => {
-    try {
-      const currentUser = await User.me();
-      setUser(currentUser);
-    } catch (error) {
-      console.log("User not authenticated");
-    }
-  };
+  useEffect(() => {
+    loadSidebarState();
+  }, [loadSidebarState]);
 
   const handleLogout = async () => {
-    await User.logout();
-  };
-
-  const toggleGroup = (groupId) => {
-    setCollapsedGroups(prev => {
-      const newState = { ...prev, [groupId]: !prev[groupId] };
-      localStorage.setItem('sidebar-collapsed', JSON.stringify(newState));
-      return newState;
-    });
+    await logout();
   };
 
   const hasAccess = (item) => {
@@ -673,7 +600,7 @@ export default function Layout({ children, currentPageName }) {
             {navigationCategories.map((category, idx) => (
               <SidebarGroup key={idx} className="mb-4">
                 <button
-                  onClick={() => toggleGroup(category.id)}
+                  onClick={() => toggleSidebarGroup(category.id)}
                   className="group-header w-full flex items-center justify-between cursor-pointer hover:bg-white/5 rounded-lg transition-colors"
                 >
                   <span>{category.label}</span>
@@ -819,11 +746,11 @@ export default function Layout({ children, currentPageName }) {
                     className="w-9 h-9 bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg"
                   >
                     <span className="text-white font-bold text-sm">
-                      {user.full_name?.charAt(0) || 'A'}
+                      {(user.full_name || user.name || 'A').charAt(0)}
                     </span>
                   </motion.div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-[#E5E7EB] text-sm truncate">{user.full_name || 'Admin'}</p>
+                    <p className="font-semibold text-[#E5E7EB] text-sm truncate">{user.full_name || user.name || 'Admin'}</p>
                     <div className="flex items-center gap-2">
                       <p className="text-[10px] text-[#9CA3AF] truncate uppercase tracking-wide font-medium">{user.role}</p>
                       <Badge variant="outline" className="bg-[#39ff14]/20 text-[#39ff14] border-[#39ff14]/30 text-[9px] px-1 py-0">
@@ -895,7 +822,7 @@ export default function Layout({ children, currentPageName }) {
                         className="w-9 h-9 bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] rounded-full flex items-center justify-center cursor-pointer shadow-lg"
                       >
                         <span className="text-white text-sm font-semibold">
-                          {user.full_name?.charAt(0) || 'U'}
+                          {(user.full_name || user.name || 'User').charAt(0)}
                         </span>
                       </motion.div>
                     </Link>
@@ -905,11 +832,12 @@ export default function Layout({ children, currentPageName }) {
             </div>
           </header>
 
-          <main className="flex-1 overflow-auto">
-            {children}
-          </main>
-        </div>
-      </div>
-    </SidebarProvider>
-  );
+      <main className="flex-1 overflow-auto">
+        {children}
+      </main>
+    </div>
+      <CommandModal userRole={user?.role} open={commandOpen} onOpenChange={setCommandOpen} />
+  </div>
+</SidebarProvider>
+);
 }

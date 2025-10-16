@@ -1,4 +1,4 @@
-import React from "react";
+import { Fragment } from "react";
 import { MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
@@ -24,7 +24,7 @@ export default function ActionMenu({ actions, onAction, disabled = false }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="bg-[#1C2233] border-white/20">
         {actions.map((action, index) => (
-          <React.Fragment key={action.label}>
+          <Fragment key={action.label}>
             {action.separator && index > 0 && <DropdownMenuSeparator className="bg-white/10" />}
             <DropdownMenuItem
               onClick={() => onAction(action.id)}
@@ -39,7 +39,7 @@ export default function ActionMenu({ actions, onAction, disabled = false }) {
                 <span className="ml-auto text-xs text-white/40">Locked</span>
               )}
             </DropdownMenuItem>
-          </React.Fragment>
+          </Fragment>
         ))}
       </DropdownMenuContent>
     </DropdownMenu>

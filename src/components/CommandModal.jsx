@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import { useState } from "react";
 import { Settings, Pause, Camera, Download, AlertTriangle } from "lucide-react";
 import {
   Dialog,
@@ -12,11 +11,22 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AdminLog, User } from "@/api/entities";
+import { AdminLog } from "@/api/entities";
+import { useAuth } from "@/contexts/AuthProvider";
 
-export default function CommandModal({ userRole }) {
-  const [open, setOpen] = useState(false);
+export default function CommandModal({ userRole, open, onOpenChange }) {
+  const { user } = useAuth();
+  const isControlled = typeof open !== "undefined";
+  const [internalOpen, setInternalOpen] = useState(false);
   const [executing, setExecuting] = useState(false);
+  const effectiveOpen = isControlled ? open : internalOpen;
+
+  const handleOpenChange = (value) => {
+    if (!isControlled) {
+      setInternalOpen(value);
+    }
+    onOpenChange?.(value);
+  };
 
   const commands = [
     {
@@ -52,24 +62,24 @@ export default function CommandModal({ userRole }) {
 
   const executeCommand = async (commandId) => {
     setExecuting(true);
-    
+
     try {
-      const user = await User.me();
+      const currentUser = user;
       
       // Log the command execution
-      await AdminLog.create({
-        action: `Command: ${commands.find(c => c.id === commandId)?.label}`,
-        endpoint: "/command-center",
-        status: "success",
-        user_role: user.role,
-        details: `User ${user.email} executed command: ${commandId}`
-      });
+        await AdminLog.create({
+          action: `Command: ${commands.find(c => c.id === commandId)?.label}`,
+          endpoint: "/command-center",
+          status: "success",
+          user_role: currentUser?.role || userRole,
+          details: `User ${currentUser?.email || 'unknown'} executed command: ${commandId}`
+        });
 
       // Simulate command execution
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       alert(`Command executed successfully: ${commands.find(c => c.id === commandId)?.label}`);
-      setOpen(false);
+      handleOpenChange(false);
     } catch (error) {
       console.error("Command execution failed:", error);
       
@@ -92,11 +102,12 @@ export default function CommandModal({ userRole }) {
 
   const canExecute = (command) => {
     if (!command.requiresRole) return true;
-    return userRole === command.requiresRole;
+    const role = userRole || user?.role;
+    return role === command.requiresRole;
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={effectiveOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button 
           className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] shadow-lg shadow-[#3B82F6]/30 hover:shadow-xl hover:shadow-[#3B82F6]/40 transition-all z-50"

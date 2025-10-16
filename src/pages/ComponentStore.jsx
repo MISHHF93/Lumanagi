@@ -1,4 +1,3 @@
-import React from "react";
 import { Package, Download, Star, TrendingUp, BarChart, PieChart as PieChartIcon } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";

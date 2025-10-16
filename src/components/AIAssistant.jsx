@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { MessageSquare, X, Send, Lightbulb, Shield, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { InvokeLLM } from "@/api/integrations";
 
 export default function AIAssistant({ isOpen, onClose }) {
@@ -33,7 +32,7 @@ export default function AIAssistant({ isOpen, onClose }) {
         role: "assistant",
         content: response
       }]);
-    } catch (error) {
+    } catch {
       setMessages(prev => [...prev, {
         role: "assistant",
         content: "I encountered an error processing your request. Please try again."

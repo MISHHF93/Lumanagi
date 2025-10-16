@@ -1,4 +1,3 @@
-import React from "react";
 import { Shield, CheckCircle2, AlertTriangle, HelpCircle, TrendingUp } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
@@ -207,7 +206,7 @@ export default function TrustTruthEngine() {
         <div className="p-6">
           <h3 className="text-lg font-bold text-white mb-4">Truth Verification Methodology</h3>
           <div className="space-y-3 text-sm text-white/80">
-            <p><span className="font-semibold text-[#3B82F6]">Model Confidence</span> (30%): AI's certainty in claim</p>
+            <p><span className="font-semibold text-[#3B82F6]">Model Confidence</span> (30%): AI&rsquo;s certainty in claim</p>
             <p><span className="font-semibold text-[#8B5CF6]">Human Agreement</span> (30%): Expert verification rate</p>
             <p><span className="font-semibold text-[#39ff14]">Data Redundancy</span> (20%): Multiple independent sources</p>
             <p><span className="font-semibold text-[#00d4ff]">Override Inverse</span> (20%): 100 - (times claim was rejected)</p>

@@ -1,4 +1,3 @@
-import React from "react";
 import { Key, Shield, Users, Lock, CheckCircle2, XCircle, Activity } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";

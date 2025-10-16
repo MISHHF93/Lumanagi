@@ -1,28 +1,24 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { AdminLog, User } from "@/api/entities";
+import { useState, useEffect, useCallback } from "react";
+import { AdminLog } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
-import CommandModal from "../components/CommandModal";
 import { FileText, Search, Download, Filter, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/contexts/AuthProvider";
 
 export default function AuditLogs() {
   const [logs, setLogs] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
 
   const loadData = async () => {
-    const [logsData, currentUser] = await Promise.all([
-      AdminLog.list("-created_date", 100),
-      User.me().catch(() => null)
-    ]);
+    const logsData = await AdminLog.list("-created_date", 100);
     setLogs(logsData);
-    setUser(currentUser);
   };
 
   const applyFilters = useCallback(() => {
@@ -211,7 +207,6 @@ export default function AuditLogs() {
         </div>
       </GlassCard>
 
-      <CommandModal userRole={user?.role} />
     </div>
   );
 }
