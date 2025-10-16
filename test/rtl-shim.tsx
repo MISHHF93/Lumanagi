@@ -26,7 +26,8 @@ const textMatches = (text: string, matcher: Matcher) => {
 }
 
 const extractTagText = (tag: string, markup: string) => {
-  const regex = new RegExp(`<${tag}[^>]*>([\s\S]*?)<\\/${tag}>`, 'gi')
+  const pattern = String.raw`<${tag}[^>]*>([\s\S]*?)<\/${tag}>`
+  const regex = new RegExp(pattern, 'gi')
   const results: string[] = []
   let match
   while ((match = regex.exec(markup)) !== null) {

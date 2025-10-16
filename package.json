@@ -8,7 +8,7 @@
     "start": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
-    "test": "node --test --loader ./test/esbuild-loader.mjs",
+    "test": "node ./test/run-tests.mjs",
     "full": "npm run lint && npm run test && npm run build",
     "preview": "vite preview"
   },
