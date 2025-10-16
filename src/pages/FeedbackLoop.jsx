@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { AIFeedback } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";

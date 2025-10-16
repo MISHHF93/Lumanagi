@@ -1,4 +1,3 @@
-import React from "react";
 import { GitBranch, Brain, User, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";

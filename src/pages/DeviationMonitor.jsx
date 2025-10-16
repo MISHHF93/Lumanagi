@@ -1,4 +1,3 @@
-import React from "react";
 import { Activity, AlertTriangle, TrendingUp, Zap, Radio } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";

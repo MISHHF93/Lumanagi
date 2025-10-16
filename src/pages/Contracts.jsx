@@ -1,24 +1,19 @@
 
 import React, { useState, useEffect, useCallback } from "react";
-import { ContractMetric, AdminLog } from "@/api/entities";
+import { ContractMetric, AdminLog, User } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
 import StatusBadge from "../components/StatusBadge";
 import ActionMenu from "../components/ActionMenu";
-import CommandModal from "../components/CommandModal";
 import { FileCode2, Activity, Zap, TrendingUp, ExternalLink, RefreshCw, Pause, Play, FileSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { useAppStore } from "@/store/useAppStore";
 
 export default function Contracts() {
   const [contracts, setContracts] = useState([]);
   const [selectedContract, setSelectedContract] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { user, fetchUser } = useAppStore((state) => ({
-    user: state.user,
-    fetchUser: state.fetchUser
-  }));
+  const [user, setUser] = useState(null);
 
   const loadContracts = useCallback(async () => {
     setIsRefreshing(true);
@@ -32,10 +27,17 @@ export default function Contracts() {
 
   useEffect(() => {
     loadContracts();
-    if (!user) {
-      fetchUser();
+    loadUser();
+  }, [loadContracts]);
+
+  const loadUser = async () => {
+    try {
+      const currentUser = await User.me();
+      setUser(currentUser);
+    } catch (error) {
+      console.log("User not authenticated");
     }
-  }, [fetchUser, loadContracts, user]);
+  };
 
   const handleContractAction = async (contractId, actionId) => {
     const contract = contracts.find(c => c.id === contractId);
@@ -364,7 +366,6 @@ export default function Contracts() {
         </div>
       </div>
 
-      <CommandModal userRole={user?.role} />
     </div>
   );
 }

@@ -1,33 +1,27 @@
 
 import React, { useState, useEffect } from "react";
-import { Alert as AlertEntity, AdminLog } from "@/api/entities";
+import { Alert as AlertEntity, AdminLog, User } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
-import CommandModal from "../components/CommandModal";
 import { Bell, CheckCircle2, AlertTriangle, XCircle, Clock, Flag } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAppStore } from "@/store/useAppStore";
 
 export default function Alerts() {
   const [alerts, setAlerts] = useState([]);
   const [filter, setFilter] = useState("all");
-  const { user, fetchUser } = useAppStore((state) => ({
-    user: state.user,
-    fetchUser: state.fetchUser
-  }));
+  const [user, setUser] = useState(null);
   const [processing, setProcessing] = useState(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     loadAlerts();
-    if (!user) {
-      fetchUser();
-    }
-  }, [fetchUser, user]);
+    loadUser();
+  }, []);
 
   const loadAlerts = async () => {
-    const data = await AlertEntity.list("-created_date");
+    const data = await AlertEntity.list("-triggered_at");
     setAlerts(data);
   };
 
@@ -352,7 +346,6 @@ export default function Alerts() {
         </div>
       </GlassCard>
 
-      <CommandModal userRole={user?.role} />
     </div>
   );
 }

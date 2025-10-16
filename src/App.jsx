@@ -1,8 +1,6 @@
-import './App.css';
-import Pages from '@/pages/index.jsx';
-import { Toaster } from '@/components/ui/toaster';
-import { useEffect } from 'react';
-import { useAppStore } from '@/store/useAppStore';
+import './App.css'
+import Pages from "@/pages/index.jsx"
+import { Toaster } from "@/components/ui/toaster"
 
 function App() {
   const fetchUser = useAppStore((state) => state.fetchUser);
@@ -12,11 +10,11 @@ function App() {
   }, [fetchUser]);
 
   return (
-    <>
+    <AuthProvider>
       <Pages />
       <Toaster />
     </>
-  );
+  )
 }
 
-export default App;
+export default App 

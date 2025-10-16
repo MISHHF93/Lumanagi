@@ -1,4 +1,3 @@
-import React from "react";
 import { Shield, CheckCircle2, AlertTriangle, Activity, TrendingUp } from "lucide-react";
 import GlassCard from "./GlassCard";
 import { Progress } from "@/components/ui/progress";

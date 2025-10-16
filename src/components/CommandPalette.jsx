@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Search, ArrowRight, Clock, Star } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, ArrowRight } from "lucide-react";
 import { createPageUrl } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import {

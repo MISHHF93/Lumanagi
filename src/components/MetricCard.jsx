@@ -1,4 +1,3 @@
-import React from "react";
 import GlassCard from "./GlassCard";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 

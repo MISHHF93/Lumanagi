@@ -1,59 +1,44 @@
 
 import React, { useState, useEffect } from "react";
-import { ContractMetric, TokenAnalytic, Market, OracleFeed, Alert, AdminLog } from "@/api/entities";
+import { ContractMetric, TokenAnalytic, Market, OracleFeed, Alert, AdminLog, User } from "@/api/entities";
 import MetricCard from "../components/MetricCard";
 import GlassCard from "../components/GlassCard";
 import StatusBadge from "../components/StatusBadge";
 import AIInsightCard from "../components/AIInsightCard";
 import TrustAuditPanel from "../components/TrustAuditPanel";
-import CommandModal from "../components/CommandModal";
-import { 
-  Activity, 
-  Coins, 
-  TrendingUp, 
-  AlertCircle,
-  ArrowUpRight,
-  Zap,
-  Users,
-  DollarSign,
-  Brain
-} from "lucide-react";
+import { Activity, Coins, TrendingUp, AlertCircle, ArrowUpRight, Zap, Users, DollarSign, Brain } from "lucide-react";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAppStore } from "@/store/useAppStore";
 
 export default function Dashboard() {
   const [contracts, setContracts] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [tokenData, setTokenData] = useState([]);
-  const { user, fetchUser } = useAppStore((state) => ({
-    user: state.user,
-    fetchUser: state.fetchUser
-  }));
+  const [user, setUser] = useState(null);
   const [viewMode, setViewMode] = useState("overview"); // overview | mission-control
+  const { user } = useAuth();
 
   useEffect(() => {
     loadData();
-    if (!user) {
-      fetchUser();
-    }
-  }, [fetchUser, user]);
+    loadUser();
+  }, []);
 
   const loadData = async () => {
-    const [contractsData, alertsData, logsData, tokenDataResult] = await Promise.all([
+    const [contractsData, alertDataRaw, logsData, tokenDataResult] = await Promise.all([
       ContractMetric.list("-created_date", 10),
-      Alert.filter({ is_resolved: false }, "-created_date", 5),
+      Alert.list("-triggered_at", 20),
       AdminLog.list("-created_date", 5),
       TokenAnalytic.list("-created_date", 20)
     ]);
-    
+
     setContracts(contractsData);
-    setAlerts(alertsData);
+    const openAlerts = alertDataRaw.filter((alert) => !alert.acknowledged);
+    setAlerts(openAlerts.slice(0, 5));
     setRecentActivity(logsData);
     setTokenData(tokenDataResult);
   };
@@ -363,7 +348,6 @@ export default function Dashboard() {
         </GlassCard>
       </div>
 
-      <CommandModal userRole={user?.role} />
     </div>
   );
 }

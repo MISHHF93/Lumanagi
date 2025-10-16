@@ -1,4 +1,3 @@
-import React from "react";
 import GlassCard from "../components/GlassCard";
 import PolicyRuleCard from "../components/PolicyRuleCard";
 import MetricCard from "../components/MetricCard";

@@ -1,4 +1,3 @@
-import React from "react";
 import { Shield, CheckCircle2, AlertTriangle, Clock, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import GlassCard from "./GlassCard";

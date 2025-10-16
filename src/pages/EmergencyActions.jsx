@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { AlertTriangle, Power, Pause, StopCircle, Shield, FileText } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
@@ -6,15 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,  } from "@/components/ui/dialog";
 
 export default function EmergencyActions() {
   const [confirmationText, setConfirmationText] = useState("");
@@ -201,7 +193,7 @@ export default function EmergencyActions() {
                         <div className="space-y-4 my-4">
                           <div>
                             <label className="text-sm text-white/70 mb-2 block">
-                              Type "{action.confirmationPhrase}" to confirm
+                              Type &ldquo;{action.confirmationPhrase}&rdquo; to confirm
                             </label>
                             <Input
                               value={confirmationText}

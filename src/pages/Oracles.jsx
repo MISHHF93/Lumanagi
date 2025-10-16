@@ -1,14 +1,12 @@
 
 import React, { useState, useEffect, useCallback } from "react";
-import { OracleFeed, AdminLog } from "@/api/entities";
+import { OracleFeed, AdminLog, User } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
 import StatusBadge from "../components/StatusBadge";
-import CommandModal from "../components/CommandModal";
 import { Radio, TrendingUp, Clock, AlertTriangle, Activity, RefreshCw, Repeat } from "lucide-react";
 import { format, differenceInSeconds } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
-import { useAppStore } from "@/store/useAppStore";
 import {
   Tooltip as UITooltip,
   TooltipContent,
@@ -19,11 +17,9 @@ import {
 export default function Oracles() {
   const [feeds, setFeeds] = useState([]);
   const [selectedFeed, setSelectedFeed] = useState(null);
-  const { user, fetchUser } = useAppStore((state) => ({
-    user: state.user,
-    fetchUser: state.fetchUser
-  }));
+  const [user, setUser] = useState(null);
   const [refreshing, setRefreshing] = useState(null);
+  const { user } = useAuth();
 
   const loadFeeds = useCallback(async () => {
     const data = await OracleFeed.list("-created_date");
@@ -35,10 +31,8 @@ export default function Oracles() {
 
   useEffect(() => {
     loadFeeds();
-    if (!user) {
-      fetchUser();
-    }
-  }, [fetchUser, loadFeeds, user]);
+    loadUser();
+  }, [loadFeeds]);
 
   const handleForceRefresh = async (feedId) => {
     const feed = feeds.find(f => f.id === feedId);
@@ -345,7 +339,6 @@ export default function Oracles() {
         </div>
       )}
 
-      <CommandModal userRole={user?.role} />
     </div>
   );
 }
