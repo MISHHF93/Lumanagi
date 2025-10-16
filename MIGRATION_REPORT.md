@@ -1,7 +1,7 @@
 # Lumanagi Migration Report
 
 ## Overview
-- Removed all Base44 SDK dependencies, brand assets, and configuration.
+- Removed all legacy vendor SDK dependencies, brand assets, and configuration.
 - Replaced the legacy client with an Axios-based API layer featuring auth interceptors and resilience fallbacks.
 - Introduced typed governance entities in `src/lib/entities.ts` backed by seeded offline data stores.
 - Added custom Zustand-style stores for authentication and UI state, exposed via `AuthProvider`.

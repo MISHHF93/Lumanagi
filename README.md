@@ -1,6 +1,6 @@
 # Lumanagi Platform
 
-Lumanagi is an AI governance and security intelligence control plane built with Vite + React. The application has been refactored away from legacy Base44 dependencies and now ships with an offline-friendly data layer, authenticated state powered by a Zustand-style store, and a typed entity catalogue for all governance domains.
+Lumanagi is an AI governance and security intelligence control plane built with Vite + React. The application has been refactored away from legacy vendor dependencies and now ships with an offline-friendly data layer, authenticated state powered by a Zustand-style store, and a typed entity catalogue for all governance domains.
 
 ## Requirements
 
@@ -56,7 +56,7 @@ See `.env.example` for the required variables. At a minimum you should set `VITE
 
 ## Migration Status
 
-- Base44 SDK, assets, and configuration have been removed.
+- Legacy vendor SDK, assets, and configuration have been removed.
 - Axios with interceptors is used for all API calls.
 - Entities are typed and seeded for offline UX.
 - Zustand-style stores manage authentication and global UI state.
