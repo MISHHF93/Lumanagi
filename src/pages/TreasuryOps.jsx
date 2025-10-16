@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Coins, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, PieChart as PieChartIcon } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";

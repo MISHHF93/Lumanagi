@@ -1,4 +1,4 @@
-import { Target, AlertTriangle, TrendingUp, Shield, Activity } from "lucide-react";
+import { Target, AlertTriangle, Shield, Activity } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Badge } from "@/components/ui/badge";

@@ -3,7 +3,7 @@ import { SecurityIncident, Alert as AlertEntity } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Shield, AlertTriangle, Clock, CheckCircle2, Activity, Lock } from "lucide-react";
-import { format, differenceInMinutes } from "date-fns";
+import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 

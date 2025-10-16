@@ -1,4 +1,4 @@
-import { Users, Shield, Link as LinkIcon, CheckCircle2, Activity } from "lucide-react";
+import { Users, Shield, Link as LinkIcon, CheckCircle2 } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Badge } from "@/components/ui/badge";

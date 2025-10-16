@@ -5,7 +5,6 @@ import StatusBadge from "../components/StatusBadge";
 import { TrendingUp, Users, DollarSign, Clock, CheckCircle2 } from "lucide-react";
 import { format } from "date-fns";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
 
 export default function Markets() {
   const [markets, setMarkets] = useState([]);

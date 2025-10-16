@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { OracleFeed, AdminLog } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
 import StatusBadge from "../components/StatusBadge";
-import { Radio, TrendingUp, Clock, AlertTriangle, Activity, RefreshCw, Repeat } from "lucide-react";
+import { Radio, Clock, AlertTriangle, Activity, RefreshCw, Repeat } from "lucide-react";
 import { format, differenceInSeconds } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";

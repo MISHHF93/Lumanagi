@@ -1,4 +1,4 @@
-import { Database, Shield, CheckCircle2, AlertTriangle, Activity } from "lucide-react";
+import { Database, Shield, CheckCircle2, Activity } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Badge } from "@/components/ui/badge";

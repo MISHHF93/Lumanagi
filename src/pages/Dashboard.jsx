@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { ContractMetric, TokenAnalytic, Market, OracleFeed, Alert, AdminLog } from "@/api/entities";
+import { ContractMetric, TokenAnalytic, Alert, AdminLog } from "@/api/entities";
 import MetricCard from "../components/MetricCard";
 import GlassCard from "../components/GlassCard";
 import StatusBadge from "../components/StatusBadge";
 import AIInsightCard from "../components/AIInsightCard";
 import TrustAuditPanel from "../components/TrustAuditPanel";
-import { Activity, Coins, TrendingUp, AlertCircle, ArrowUpRight, Zap, Users, DollarSign, Brain } from "lucide-react";
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Activity, AlertCircle, ArrowUpRight, Zap, DollarSign, Brain } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";

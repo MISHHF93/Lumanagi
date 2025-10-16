@@ -1,4 +1,4 @@
-import { Package, Download, Star, TrendingUp, BarChart, PieChart as PieChartIcon } from "lucide-react";
+import { Package, Download, Star, TrendingUp } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Badge } from "@/components/ui/badge";

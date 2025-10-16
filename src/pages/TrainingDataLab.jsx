@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Brain, CheckCircle2, XCircle, Tag, Filter, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Brain, CheckCircle2, Tag, Filter, ThumbsUp, ThumbsDown } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 
 export default function TrainingDataLab() {
   const [filter, setFilter] = useState("pending");

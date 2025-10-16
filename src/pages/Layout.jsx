@@ -4,7 +4,7 @@ import { createPageUrl } from "@/utils";
 import { useAuth } from "@/contexts/AuthProvider";
 import { useUIStore } from "@/store/uiStore";
 import CommandModal from "../components/CommandModal";
-import { LayoutDashboard, FileCode2, Coins, TrendingUp, Radio, FileText, Bell, LogOut, Shield, Activity, Lock, Eye, ChevronRight, ChevronDown, Zap, Brain, Scale, Database, Workflow, Settings, UserCheck, FileCheck, Target, Lightbulb, GitBranch, Download, Users, Calendar, Key, Server, Sliders, Clock, Search, MessageSquare, Menu, X, Sparkles, CheckCircle2 } from "lucide-react";
+import { LayoutDashboard, FileCode2, Coins, TrendingUp, Radio, FileText, Bell, LogOut, Shield, Activity, Lock, Eye, ChevronRight, ChevronDown, Zap, Brain, Database, Workflow, Settings, FileCheck, Target, Lightbulb, GitBranch, Users, Calendar, Key, Server, Sliders, Clock, Search, Sparkles, CheckCircle2 } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

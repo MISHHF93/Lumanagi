@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function MetricsDesign() {
-  const [metrics, setMetrics] = useState([
+  const [metrics] = useState([
     {
       id: "metric-001",
       name: "Contract Health Score",

@@ -6,7 +6,7 @@ import { Shield, Award, FileCheck, AlertTriangle, TrendingUp, Clock } from "luci
 import { format } from "date-fns";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Compliance() {
   const [metrics, setMetrics] = useState([]);

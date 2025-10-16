@@ -1,4 +1,4 @@
-import { Brain, Zap, TrendingUp, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Brain, Zap, AlertTriangle, CheckCircle2 } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import AIInsightCard from "../components/AIInsightCard";

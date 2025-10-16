@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Bell, CheckCircle2, AlertTriangle, Info, X, Filter } from "lucide-react";
+import { Bell, CheckCircle2, AlertTriangle, X } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";

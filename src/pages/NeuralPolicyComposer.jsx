@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { Brain, GitBranch, Plus, Settings, CheckCircle2, XCircle } from "lucide-react";
+import { Brain, GitBranch, Plus, Settings, CheckCircle2 } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 
 export default function NeuralPolicyComposer() {
-  const [policies, setPolicies] = useState([
+  const [policies] = useState([
     {
       id: "pol-001",
       name: "Oracle Fallback Trigger",

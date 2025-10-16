@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
 import { User } from "@/api/entities";
-import { Shield, Palette, Bell, User as UserIcon, Smartphone, Key, Globe, Save, Camera, Monitor, Sun, Moon, LogOut, MapPin, Download, Upload, Brain, Zap, AlertTriangle } from "lucide-react";
+import { Shield, Palette, Bell, Smartphone, Key, Globe, Save, Camera, Monitor, Sun, Moon, LogOut, MapPin, Download, Brain, Zap, AlertTriangle } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
-import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
 import { AdminLog } from "@/api/entities";
@@ -51,7 +49,7 @@ const DEFAULT_SETTINGS = {
 };
 
 export default function UserSettings() {
-  const { user: authUser, setUser: setAuthUser } = useAuth();
+  const { user: authUser } = useAuth();
   const [profile, setProfile] = useState(null);
   const [originalSettings, setOriginalSettings] = useState(null);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);

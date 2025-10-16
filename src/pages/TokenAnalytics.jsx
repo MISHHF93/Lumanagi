@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { TokenAnalytic } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
-import { Coins, TrendingUp, ArrowUpDown, Flame, Activity } from "lucide-react";
-import { AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { Coins, TrendingUp, ArrowUpDown, Activity } from "lucide-react";
+import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 
@@ -34,7 +34,7 @@ export default function TokenAnalytics() {
     { name: 'Burns', value: analytics.filter(a => a.metric_type === 'burn').length, color: '#ff6b9d' },
   ];
 
-  const volumeData = analytics.slice(0, 20).reverse().map((item, i) => ({
+  const volumeData = analytics.slice(0, 20).reverse().map((item) => ({
     time: format(new Date(item.timestamp), 'HH:mm'),
     amount: item.amount || 0,
     type: item.metric_type
