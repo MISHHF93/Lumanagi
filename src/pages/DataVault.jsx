@@ -1,8 +1,7 @@
-import { Lock, Shield, Database, Key, AlertTriangle } from "lucide-react";
+import { Lock, Shield, Database, AlertTriangle } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 
 export default function DataVault() {
   const dataCategories = [

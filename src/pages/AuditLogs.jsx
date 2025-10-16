@@ -13,7 +13,7 @@ export default function AuditLogs() {
   const [filteredLogs, setFilteredLogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
 
   const loadData = async () => {
     const logsData = await AdminLog.list("-created_date", 100);

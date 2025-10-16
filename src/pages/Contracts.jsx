@@ -4,7 +4,7 @@ import { ContractMetric, AdminLog, User } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
 import StatusBadge from "../components/StatusBadge";
 import ActionMenu from "../components/ActionMenu";
-import { FileCode2, Activity, Zap, TrendingUp, ExternalLink, RefreshCw, Pause, Play, FileSearch } from "lucide-react";
+import { FileCode2, Activity, Zap, TrendingUp, ExternalLink, RefreshCw, Pause, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";

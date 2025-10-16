@@ -1,4 +1,4 @@
-import { Target, AlertTriangle, Shield, TrendingUp, CheckCircle2 } from "lucide-react";
+import { Target, AlertTriangle, Shield, CheckCircle2 } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Badge } from "@/components/ui/badge";

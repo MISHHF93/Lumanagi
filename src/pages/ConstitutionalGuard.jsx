@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { Shield, AlertTriangle, Lock, CheckCircle2, XCircle } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 export default function ConstitutionalGuard() {
   const constitutionalRules = [

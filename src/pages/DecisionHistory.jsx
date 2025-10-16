@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GitBranch, Brain, User, TrendingUp, Filter, Calendar } from "lucide-react";
+import { GitBranch, Brain, User, TrendingUp } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +9,6 @@ import { format } from "date-fns";
 
 export default function DecisionHistory() {
   const [filter, setFilter] = useState("all");
-  const [agent, setAgent] = useState("all");
-
   const decisions = [
     {
       id: "dec-001",

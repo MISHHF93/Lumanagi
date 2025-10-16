@@ -1,13 +1,12 @@
-
-import React, { useState, useEffect } from "react";
-import { ContractMetric, TokenAnalytic, Market, OracleFeed, Alert, AdminLog, User } from "@/api/entities";
+import { useState, useEffect } from "react";
+import { ContractMetric, TokenAnalytic, Market, OracleFeed, Alert, AdminLog } from "@/api/entities";
 import MetricCard from "../components/MetricCard";
 import GlassCard from "../components/GlassCard";
 import StatusBadge from "../components/StatusBadge";
 import AIInsightCard from "../components/AIInsightCard";
 import TrustAuditPanel from "../components/TrustAuditPanel";
-import { Activity, Coins, TrendingUp, AlertCircle, ArrowUpRight, Zap, Users, DollarSign, Brain } from "lucide-react";
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Activity, AlertCircle, ArrowUpRight, Zap, DollarSign, Brain } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -19,7 +18,6 @@ export default function Dashboard() {
   const [alerts, setAlerts] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
   const [tokenData, setTokenData] = useState([]);
-  const [user, setUser] = useState(null);
   const [viewMode, setViewMode] = useState("overview"); // overview | mission-control
   const { user } = useAuth();
 

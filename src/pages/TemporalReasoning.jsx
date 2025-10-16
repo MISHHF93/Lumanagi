@@ -4,7 +4,7 @@ import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Clock, AlertTriangle, TrendingUp, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { format, differenceInMinutes } from "date-fns";
+import { format } from "date-fns";
 
 export default function TemporalReasoning() {
   const [anomalies, setAnomalies] = useState([]);

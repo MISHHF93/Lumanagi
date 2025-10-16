@@ -1,8 +1,6 @@
-import { FileCheck, Shield, Zap, CheckCircle2, AlertTriangle } from "lucide-react";
-import GlassCard from "../components/GlassCard";
+import { FileCheck, Shield, Zap, CheckCircle2 } from "lucide-react";
 import MetricCard from "../components/MetricCard";
 import PolicyRuleCard from "../components/PolicyRuleCard";
-import { Badge } from "@/components/ui/badge";
 
 export default function Policies() {
   const policies = [

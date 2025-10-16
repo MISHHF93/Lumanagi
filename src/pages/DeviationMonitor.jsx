@@ -1,4 +1,4 @@
-import { Activity, AlertTriangle, TrendingUp, Zap, Radio } from "lucide-react";
+import { Activity, AlertTriangle, TrendingUp, Zap } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Badge } from "@/components/ui/badge";

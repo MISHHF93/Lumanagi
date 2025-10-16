@@ -1,4 +1,4 @@
-import { Download, FileText, Database, Shield, Calendar } from "lucide-react";
+import { Download, FileText, Shield, Calendar } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import MetricCard from "../components/MetricCard";
 import { Button } from "@/components/ui/button";
