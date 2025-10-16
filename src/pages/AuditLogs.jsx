@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { AdminLog, User } from "@/api/entities";
+import { AdminLog } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
 import CommandModal from "../components/CommandModal";
 import { FileText, Search, Download, Filter, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
@@ -8,21 +8,21 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { useAppStore } from "@/store/useAppStore";
 
 export default function AuditLogs() {
   const [logs, setLogs] = useState([]);
   const [filteredLogs, setFilteredLogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [user, setUser] = useState(null);
+  const { user, fetchUser } = useAppStore((state) => ({
+    user: state.user,
+    fetchUser: state.fetchUser
+  }));
 
   const loadData = async () => {
-    const [logsData, currentUser] = await Promise.all([
-      AdminLog.list("-created_date", 100),
-      User.me().catch(() => null)
-    ]);
+    const logsData = await AdminLog.list("-created_date", 100);
     setLogs(logsData);
-    setUser(currentUser);
   };
 
   const applyFilters = useCallback(() => {
@@ -45,7 +45,10 @@ export default function AuditLogs() {
 
   useEffect(() => {
     loadData();
-  }, []);
+    if (!user) {
+      fetchUser();
+    }
+  }, [fetchUser, user]);
 
   useEffect(() => {
     applyFilters();

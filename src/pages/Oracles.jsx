@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from "react";
-import { OracleFeed, AdminLog, User } from "@/api/entities";
+import { OracleFeed, AdminLog } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
 import StatusBadge from "../components/StatusBadge";
 import CommandModal from "../components/CommandModal";
@@ -8,6 +8,7 @@ import { Radio, TrendingUp, Clock, AlertTriangle, Activity, RefreshCw, Repeat } 
 import { format, differenceInSeconds } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
+import { useAppStore } from "@/store/useAppStore";
 import {
   Tooltip as UITooltip,
   TooltipContent,
@@ -18,7 +19,10 @@ import {
 export default function Oracles() {
   const [feeds, setFeeds] = useState([]);
   const [selectedFeed, setSelectedFeed] = useState(null);
-  const [user, setUser] = useState(null);
+  const { user, fetchUser } = useAppStore((state) => ({
+    user: state.user,
+    fetchUser: state.fetchUser
+  }));
   const [refreshing, setRefreshing] = useState(null);
 
   const loadFeeds = useCallback(async () => {
@@ -29,21 +33,12 @@ export default function Oracles() {
     }
   }, [selectedFeed]);
 
-  const loadUser = async () => {
-    try {
-      const currentUser = await User.me();
-      setUser(currentUser);
-    } catch (error) {
-      console.log("User not authenticated or error loading user:", error);
-      // Optionally handle unauthenticated state, e.g., set user to a default guest role
-      setUser({ role: 'guest' }); 
-    }
-  };
-
   useEffect(() => {
     loadFeeds();
-    loadUser();
-  }, [loadFeeds]);
+    if (!user) {
+      fetchUser();
+    }
+  }, [fetchUser, loadFeeds, user]);
 
   const handleForceRefresh = async (feedId) => {
     const feed = feeds.find(f => f.id === feedId);

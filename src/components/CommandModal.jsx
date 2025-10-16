@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Settings, Pause, Camera, Download, AlertTriangle } from "lucide-react";
 import {
   Dialog,
@@ -12,11 +12,22 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AdminLog, User } from "@/api/entities";
+import { AdminLog } from "@/api/entities";
+import { useAppStore } from "@/store/useAppStore";
 
 export default function CommandModal({ userRole }) {
   const [open, setOpen] = useState(false);
   const [executing, setExecuting] = useState(false);
+  const { user, fetchUser } = useAppStore((state) => ({
+    user: state.user,
+    fetchUser: state.fetchUser
+  }));
+
+  useEffect(() => {
+    if (!user) {
+      fetchUser();
+    }
+  }, [fetchUser, user]);
 
   const commands = [
     {
@@ -54,15 +65,18 @@ export default function CommandModal({ userRole }) {
     setExecuting(true);
     
     try {
-      const user = await User.me();
-      
+      const currentUser = user ?? (await fetchUser());
+      if (!currentUser) {
+        throw new Error('User context unavailable');
+      }
+
       // Log the command execution
       await AdminLog.create({
         action: `Command: ${commands.find(c => c.id === commandId)?.label}`,
         endpoint: "/command-center",
         status: "success",
-        user_role: user.role,
-        details: `User ${user.email} executed command: ${commandId}`
+        user_role: currentUser.role,
+        details: `User ${currentUser.email} executed command: ${commandId}`
       });
 
       // Simulate command execution
