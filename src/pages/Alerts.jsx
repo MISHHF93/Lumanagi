@@ -25,7 +25,8 @@ export default function Alerts() {
       // try to populate local user when auth context not available
       User.me().then((u) => setLocalUser(u)).catch(() => {});
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authUser]);
 
   const loadAlerts = async () => {
     const data = await AlertEntity.list("-triggered_at");
@@ -34,7 +35,7 @@ export default function Alerts() {
 
   const resolveAlert = async (alertId) => {
     setProcessing(alertId);
-    const alertItem = alerts.find(a => a.id === alertId); // renamed to avoid shadowing global alert()
+    const alertItem = alerts.find(a => a.id === alertId);
 
     try {
       await AlertEntity.update(alertId, { 
@@ -56,7 +57,6 @@ export default function Alerts() {
 
       loadAlerts();
     } catch (error) {
-      // use global alert() safely (no name collision)
       alert('Failed to resolve alert');
       console.error("Error resolving alert:", error);
     } finally {
@@ -267,7 +267,7 @@ export default function Alerts() {
                           variant="outline" 
                           className="bg-white/5 border-white/20 text-white/70 text-xs"
                         >
-                          {alertItem.alert_type.replace(/_/g, ' ')}
+                          {String(alertItem.alert_type || '').replace(/_/g, ' ')}
                         </Badge>
                       </div>
                       <p className="text-white/70 mb-3">{alertItem.message}</p>

@@ -1,12 +1,12 @@
-
 import React, { useState, useEffect, useCallback } from "react";
-import { OracleFeed, AdminLog, User } from "@/api/entities";
+import { OracleFeed, AdminLog } from "@/lib/entities";
 import GlassCard from "../components/GlassCard";
 import StatusBadge from "../components/StatusBadge";
 import { Radio, Clock, AlertTriangle, Activity, RefreshCw, Repeat } from "lucide-react";
 import { format, differenceInSeconds } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthProvider";
 import {
   Tooltip as UITooltip,
   TooltipContent,
@@ -17,9 +17,8 @@ import {
 export default function Oracles() {
   const [feeds, setFeeds] = useState([]);
   const [selectedFeed, setSelectedFeed] = useState(null);
-  const [localUser, setLocalUser] = useState(null);
-  const [refreshing, setRefreshing] = useState(null);
   const { user } = useAuth();
+  const [refreshing, setRefreshing] = useState(null);
 
   const loadFeeds = useCallback(async () => {
     const data = await OracleFeed.list("-created_date");
@@ -56,11 +55,11 @@ export default function Oracles() {
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       // Update the feed's last_update and status to simulate a refresh
-      // Also simulate a minor price change
+      // Also simulate a minor price change (use safe price fallback)
       await OracleFeed.update(feedId, {
         last_update: new Date().toISOString(),
         status: 'active',
-        price: feed.price * (0.99 + Math.random() * 0.02) // Simulate price fluctuation
+        price: (feed.price ?? feed.last_price ?? 0) * (0.99 + Math.random() * 0.02) // safe price
       });
 
       // Reload feeds to reflect changes across the UI
@@ -101,14 +100,15 @@ export default function Oracles() {
   };
 
   const isStale = (feed) => {
-    if (!feed.last_update) return false;
-    const secondsSinceUpdate = differenceInSeconds(new Date(), new Date(feed.last_update));
-    return secondsSinceUpdate > (feed.update_frequency || 60);
+    const last = feed.last_update ?? feed.last_updated;
+    if (!last) return false;
+    const secondsSinceUpdate = differenceInSeconds(new Date(), new Date(last));
+    return secondsSinceUpdate > (feed.update_frequency ?? 60);
   };
 
   const mockPriceHistory = Array(20).fill(0).map((_, i) => ({
     time: i,
-    price: selectedFeed ? selectedFeed.price * (0.95 + Math.random() * 0.1) : 0
+    price: selectedFeed ? (selectedFeed.price ?? selectedFeed.last_price ?? 0) * (0.95 + Math.random() * 0.1) : 0
   }));
 
   return (
@@ -158,10 +158,10 @@ export default function Oracles() {
                   <div className="flex items-center gap-2 text-white/60">
                     <Clock className="w-4 h-4" />
                     <span>
-                      {feed.last_update 
-                        ? format(new Date(feed.last_update), 'HH:mm:ss')
+                      {(feed.last_update ?? feed.last_updated) 
+                        ? format(new Date(feed.last_update ?? feed.last_updated), 'HH:mm:ss')
                         : 'N/A'
-                      }
+                     }
                     </span>
                   </div>
                   {stale && (
@@ -290,7 +290,7 @@ export default function Oracles() {
                 <div className="p-4 rounded-xl bg-white/5 border border-white/10">
                   <p className="text-xs text-white/60 mb-1">Current Price</p>
                   <p className="text-2xl font-bold text-white">
-                    ${selectedFeed.price?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    ${(selectedFeed.price ?? selectedFeed.last_price ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                   </p>
                 </div>
 
@@ -302,14 +302,14 @@ export default function Oracles() {
                 <div className="p-4 rounded-xl bg-white/5 border border-white/10">
                   <p className="text-xs text-white/60 mb-1">Last Update</p>
                   <p className="text-white font-medium">
-                    {selectedFeed.last_update 
-                      ? format(new Date(selectedFeed.last_update), 'MMM d, yyyy HH:mm:ss')
+                    {(selectedFeed.last_update ?? selectedFeed.last_updated) 
+                      ? format(new Date(selectedFeed.last_update ?? selectedFeed.last_updated), 'MMM d, yyyy HH:mm:ss')
                       : 'N/A'
                     }
                   </p>
                   {selectedFeed.last_update && (
                     <p className="text-xs text-white/50 mt-1">
-                      {differenceInSeconds(new Date(), new Date(selectedFeed.last_update))}s ago
+                      {differenceInSeconds(new Date(), new Date(selectedFeed.last_update ?? selectedFeed.last_updated))}s ago
                     </p>
                   )}
                 </div>

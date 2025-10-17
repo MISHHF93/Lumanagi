@@ -12,6 +12,7 @@ import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
 import { AdminLog } from "@/api/entities";
+import { useAuth } from "@/contexts/AuthProvider";
 
 const DEFAULT_SETTINGS = {
   // Personalization
@@ -48,7 +49,7 @@ const DEFAULT_SETTINGS = {
 };
 
 export default function UserSettings() {
-  const { user: authUser, setUser: setAuthUser } = useAuth();
+  const { setUser: setAuthUser } = useAuth();
   const [profile, setProfile] = useState(null);
   const [originalSettings, setOriginalSettings] = useState(null);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
@@ -70,7 +71,7 @@ export default function UserSettings() {
   const loadUser = async () => {
     try {
       const currentUser = await User.me();
-      setUser(currentUser);
+      setAuthUser(currentUser);
       
       // Load user settings from user data or use defaults
       const userSettings = currentUser.settings 
@@ -148,7 +149,7 @@ export default function UserSettings() {
     try {
       // Save to user entity
       const updated = await User.update({ settings });
-      setUser(updated);
+      setAuthUser(updated);
       
       // Log settings change
       if (originalSettings) {
