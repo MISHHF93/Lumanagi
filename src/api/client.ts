@@ -1,7 +1,7 @@
-import axios from 'axios'
+import axios, { type AxiosRequestHeaders } from 'axios'
 import { clearAuthState, getAuthToken } from '@/store/authStore'
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || '/api'
+const baseURL = (process.env.VITE_API_BASE_URL as string) || '/api'
 
 export const apiClient = axios.create({
   baseURL,
@@ -26,8 +26,8 @@ export class ApiError extends Error {
 apiClient.interceptors.request.use((config) => {
   const token = getAuthToken()
   if (token) {
-    config.headers = config.headers ?? {}
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers = config.headers ?? ({} as AxiosRequestHeaders)
+    ; (config.headers as AxiosRequestHeaders)['Authorization'] = `Bearer ${token}`
   }
   return config
 })

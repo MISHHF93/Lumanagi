@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse } from 'axios';
 
 export interface ApiError extends Error {
   status?: number;
@@ -7,8 +7,12 @@ export interface ApiError extends Error {
 
 const defaultBaseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4000';
 
+const viteApiBase =
+  (typeof process !== 'undefined' && (process.env as any).VITE_API_BASE_URL) ??
+  (typeof (globalThis as any).VITE_API_BASE_URL !== 'undefined' ? (globalThis as any).VITE_API_BASE_URL : undefined);
+
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? `${defaultBaseUrl}/api`,
+  baseURL: viteApiBase ?? `${defaultBaseUrl}/api`,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
@@ -19,8 +23,8 @@ apiClient.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
     const token = window.localStorage.getItem('lumanagi.authToken');
     if (token) {
-      config.headers = config.headers ?? {};
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers = config.headers ?? ({} as AxiosRequestHeaders);
+      (config.headers as AxiosRequestHeaders).Authorization = `Bearer ${token}`;
     }
   }
   return config;
@@ -32,8 +36,10 @@ export const toApiError = (error: unknown): ApiError => {
   }
 
   const axiosError = error as AxiosError;
+  const data = axiosError.response?.data;
+  const messageFromData = data && typeof (data as any).message === 'string' ? (data as any).message : undefined;
   const apiError: ApiError = new Error(
-    axiosError.response?.data?.message ?? axiosError.message ?? 'Unexpected API error'
+    messageFromData ?? axiosError.message ?? 'Unexpected API error'
   );
 
   apiError.status = axiosError.response?.status;

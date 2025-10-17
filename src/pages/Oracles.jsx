@@ -17,7 +17,7 @@ import {
 export default function Oracles() {
   const [feeds, setFeeds] = useState([]);
   const [selectedFeed, setSelectedFeed] = useState(null);
-  const [user, setUser] = useState(null);
+  const [localUser, setLocalUser] = useState(null);
   const [refreshing, setRefreshing] = useState(null);
   const { user } = useAuth();
 
@@ -31,7 +31,6 @@ export default function Oracles() {
 
   useEffect(() => {
     loadFeeds();
-    loadUser();
   }, [loadFeeds]);
 
   const handleForceRefresh = async (feedId) => {

@@ -331,3 +331,56 @@ export function createEntityApi<T extends BaseEntity>({ resource, mockData }: En
     }
   };
 }
+
+export const AdminLog: EntityApi<AdminLog> = {
+  async list(orderBy?, limit?, config?) {
+    return await get(`/admin/logs`, { ...config, params: { order_by: orderBy, limit } });
+  },
+  async filter(filters?, orderBy?, limit?, config?) {
+    return await get(`/admin/logs`, { ...config, params: { ...filters, order_by: orderBy, limit } });
+  },
+  async get(id, config) {
+    return await get(`/admin/logs/${id}`, config);
+  },
+  async create(payload, config) {
+    return await post(`/admin/logs`, payload, config);
+  },
+  async update(id, payload, config) {
+    return await patch(`/admin/logs/${id}`, payload, config);
+  },
+  async remove(id, config) {
+    return await del(`/admin/logs/${id}`, config);
+  }
+};
+
+// Export runtime entity APIs used by the app
+export const ContractMetric = createEntityApi<ContractMetric>({ resource: 'contract-metrics' });
+export const TokenAnalytic = createEntityApi<TokenAnalytic>({ resource: 'token-analytics' });
+export const Market = createEntityApi<Market>({ resource: 'markets' });
+export const OracleFeed = createEntityApi<OracleFeed>({ resource: 'oracle-feeds' });
+export const Alert = createEntityApi<Alert>({ resource: 'alerts' });
+
+// Minimal User runtime API expected by consumers
+export const User = {
+  async me(): Promise<UserProfile> {
+    try {
+      return await get<UserProfile>('/auth/me');
+    } catch (error) {
+      throw toApiError(error);
+    }
+  },
+  async update(payload: Partial<UserProfile>): Promise<UserProfile> {
+    try {
+      return await patch<UserProfile>('/auth/me', payload);
+    } catch (error) {
+      throw toApiError(error);
+    }
+  },
+  async logout(): Promise<void> {
+    try {
+      await post<void>('/auth/logout');
+    } catch (error) {
+      throw toApiError(error);
+    }
+  }
+};

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ContractMetric, TokenAnalytic, Market, OracleFeed, Alert, AdminLog } from "@/api/entities";
+import { ContractMetric, TokenAnalytic, Market, OracleFeed, Alert, AdminLog, User } from "@/lib/entities";
 import MetricCard from "../components/MetricCard";
 import GlassCard from "../components/GlassCard";
 import StatusBadge from "../components/StatusBadge";
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Dashboard() {
   const [contracts, setContracts] = useState([]);

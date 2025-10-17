@@ -1,23 +1,30 @@
-
 import React, { useState, useEffect } from "react";
-import { Alert as AlertEntity, AdminLog, User } from "@/api/entities";
+import { Alert as AlertEntity, AdminLog, User } from "@/lib/entities";
 import GlassCard from "../components/GlassCard";
 import { Bell, CheckCircle2, AlertTriangle, XCircle, Clock, Flag } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/contexts/AuthProvider";
 
 export default function Alerts() {
   const [alerts, setAlerts] = useState([]);
   const [filter, setFilter] = useState("all");
-  const [user, setUser] = useState(null);
+  const [localUser, setLocalUser] = useState(null);
   const [processing, setProcessing] = useState(null);
-  const { user } = useAuth();
+
+  // Prefer auth context user, fallback to localUser fetched from API
+  const auth = useAuth?.();
+  const authUser = auth?.user;
+  const user = authUser ?? localUser;
 
   useEffect(() => {
     loadAlerts();
-    loadUser();
+    if (!authUser) {
+      // try to populate local user when auth context not available
+      User.me().then((u) => setLocalUser(u)).catch(() => {});
+    }
   }, []);
 
   const loadAlerts = async () => {
@@ -27,7 +34,7 @@ export default function Alerts() {
 
   const resolveAlert = async (alertId) => {
     setProcessing(alertId);
-    const alert = alerts.find(a => a.id === alertId);
+    const alertItem = alerts.find(a => a.id === alertId); // renamed to avoid shadowing global alert()
 
     try {
       await AlertEntity.update(alertId, { 
@@ -37,7 +44,7 @@ export default function Alerts() {
 
       try {
         await AdminLog.create({
-          action: `Resolved Alert: ${alert.title}`,
+          action: `Resolved Alert: ${alertItem?.title}`,
           endpoint: `/alerts/${alertId}`,
           status: 'success',
           user_role: user?.role || 'unknown',
@@ -49,6 +56,7 @@ export default function Alerts() {
 
       loadAlerts();
     } catch (error) {
+      // use global alert() safely (no name collision)
       alert('Failed to resolve alert');
       console.error("Error resolving alert:", error);
     } finally {
@@ -63,7 +71,7 @@ export default function Alerts() {
     try {
       try {
         await AdminLog.create({
-          action: `Escalated Alert: ${alertItem.title}`,
+          action: `Escalated Alert: ${alertItem?.title}`,
           endpoint: `/alerts/${alertId}/escalate`,
           status: 'warning',
           user_role: user?.role || 'unknown',
@@ -73,10 +81,8 @@ export default function Alerts() {
         console.error("Failed to log action:", logError);
       }
 
-      // Assuming an update is needed to mark an alert as 'escalated' or similar
-      // The outline suggests `notification_sent: true`, which might be part of escalation
       await AlertEntity.update(alertId, {
-        notification_sent: true // Or a specific 'escalated' status if available
+        notification_sent: true
       });
 
       alert('Alert escalated to compliance team');
@@ -96,7 +102,7 @@ export default function Alerts() {
     try {
       try {
         await AdminLog.create({
-          action: `Acknowledged Alert: ${alertItem.title}`,
+          action: `Acknowledged Alert: ${alertItem?.title}`,
           endpoint: `/alerts/${alertId}/acknowledge`,
           status: 'success',
           user_role: user?.role || 'unknown',
@@ -106,12 +112,8 @@ export default function Alerts() {
         console.error("Failed to log action:", logError);
       }
 
-      // Optionally, an update to the alert entity can be made here
-      // to mark it as acknowledged, if such a field exists.
-      // E.g., await AlertEntity.update(alertId, { is_acknowledged: true });
-
       alert('Alert acknowledged');
-      loadAlerts(); // Refresh alerts to reflect any potential changes (e.g., if acknowledgment changes its state)
+      loadAlerts();
     } catch (error) {
       alert('Failed to acknowledge alert');
       console.error("Error acknowledging alert:", error);

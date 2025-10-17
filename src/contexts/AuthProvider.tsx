@@ -11,7 +11,7 @@ interface AuthContextValue {
   setUser: (user: UserProfile | null) => void
 }
 
-const AuthContext = createContext<AuthContextValue | undefined>(undefined)
+export const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 interface AuthProviderProps {
   children: ReactNode
@@ -31,9 +31,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const profile = await User.me()
       setUser(profile)
     } catch (error) {
-      console.warn('Falling back to offline user profile', error)
-      const fallback = await User.fallback()
-      setUser(fallback)
+      console.warn('Failed to fetch user profile, falling back to null user', error)
+      setUser(null)
     } finally {
       setLoading(false)
       markInitialized()
