@@ -1,2 +1,2 @@
-// Re-export everything from the canonical entities module to avoid duplicates / merge artifacts
+// Re-export canonical entities to resolve merge conflicts and avoid duplicate implementations
 export * from "@/lib/entities";

@@ -22,6 +22,24 @@ npm run dev
 npm run build
 ```
 
+## Merge checklist
+
+Run these commands locally before pushing to confirm the cherry-picked changes integrate cleanly:
+
+1. Install dependencies if `node_modules` is missing:
+   ```bash
+   npm install
+   ```
+2. Generate a production build and ensure it completes without merge artefacts:
+   ```bash
+   npm run build
+   ```
+3. Optionally execute the full validation pipeline:
+   ```bash
+   npm run full
+   ```
+   This runs linting, tests, and the production build in sequence so you can catch environment-specific issues early.
+
 ## Scripts
 
 | Script | Description |

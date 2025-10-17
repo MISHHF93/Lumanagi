@@ -68,11 +68,11 @@ export default function CommandModal({ userRole, open, onOpenChange }) {
         endpoint: "/command-center",
         status: "success",
         user_role: user?.role || userRole || "unknown",
-        details: `User ${user?.email || "unknown"} executed command: ${commandId}`,
+        details: `User ${user?.email ?? "unknown"} executed command: ${commandId}`,
       });
 
       // simulate command work
-      await new Promise((r) => setTimeout(r, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       alert(`Command executed successfully: ${command?.label ?? commandId}`);
       handleOpenChange(false);
@@ -89,6 +89,7 @@ export default function CommandModal({ userRole, open, onOpenChange }) {
       } catch (logError) {
         console.error("Failed to log error:", logError);
       }
+
       alert("Command execution failed");
     } finally {
       setExecuting(false);
@@ -134,8 +135,16 @@ export default function CommandModal({ userRole, open, onOpenChange }) {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3 flex-1">
-                    <div className={`p-2 rounded-lg ${command.danger ? "bg-red-500/20" : "bg-[#3B82F6]/20"}`}>
-                      <command.icon className={`w-5 h-5 ${command.danger ? "text-red-400" : "text-[#3B82F6]"}`} />
+                    <div
+                      className={`p-2 rounded-lg ${
+                        command.danger ? "bg-red-500/20" : "bg-[#3B82F6]/20"
+                      }`}
+                    >
+                      <command.icon
+                        className={`w-5 h-5 ${
+                          command.danger ? "text-red-400" : "text-[#3B82F6]"
+                        }`}
+                      />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
@@ -160,7 +169,9 @@ export default function CommandModal({ userRole, open, onOpenChange }) {
                     disabled={executing || !hasAccess}
                     onClick={() => executeCommand(command.id)}
                     className={`${
-                      hasAccess ? "border-white/30 text-white hover:bg-white/10" : "border-white/10 text-white/40 cursor-not-allowed"
+                      hasAccess
+                        ? "border-white/30 text-white hover:bg-white/10"
+                        : "border-white/10 text-white/40 cursor-not-allowed"
                     }`}
                   >
                     {executing ? "Processing..." : "Execute"}

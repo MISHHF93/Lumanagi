@@ -15,7 +15,7 @@ export default function Alerts() {
   const [processing, setProcessing] = useState(null);
 
   // Prefer auth context user, fallback to localUser fetched from API
-  const auth = useAuth?.();
+  const auth = useAuth();
   const authUser = auth?.user;
   const user = authUser ?? localUser;
 
