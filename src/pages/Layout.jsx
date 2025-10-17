@@ -289,7 +289,7 @@ const navigationCategories = [
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
-  const [user, setUser] = useState(null);
+  const { user, logout } = useAuth();
   const [commandOpen, setCommandOpen] = useState(false);
   const [collapsedGroups, setCollapsedGroups] = useState({});
 
@@ -310,7 +310,6 @@ export default function Layout({ children, currentPageName }) {
   }, [currentPageName, location.pathname, normalizePath]);
 
   React.useEffect(() => {
-    loadUser();
     // Load collapsed state from localStorage
     const saved = localStorage.getItem('sidebar-collapsed');
     if (saved) {
@@ -322,17 +321,8 @@ export default function Layout({ children, currentPageName }) {
     }
   }, []);
 
-  const loadUser = async () => {
-    try {
-      const currentUser = await User.me();
-      setUser(currentUser);
-    } catch (error) {
-      console.log("User not authenticated");
-    }
-  };
-
   const handleLogout = async () => {
-    await User.logout();
+    await logout();
   };
 
   const toggleGroup = (groupId) => {

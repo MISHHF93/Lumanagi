@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from "react";
-import { ContractMetric, AdminLog, User } from "@/api/entities";
+import { ContractMetric, AdminLog } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
 import StatusBadge from "../components/StatusBadge";
 import ActionMenu from "../components/ActionMenu";
@@ -8,12 +8,13 @@ import { FileCode2, Activity, Zap, TrendingUp, ExternalLink, RefreshCw, Pause, P
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { useAuth } from "@/contexts/AuthProvider";
 
 export default function Contracts() {
   const [contracts, setContracts] = useState([]);
   const [selectedContract, setSelectedContract] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
 
   const loadContracts = useCallback(async () => {
     setIsRefreshing(true);
@@ -27,17 +28,7 @@ export default function Contracts() {
 
   useEffect(() => {
     loadContracts();
-    loadUser();
   }, [loadContracts]);
-
-  const loadUser = async () => {
-    try {
-      const currentUser = await User.me();
-      setUser(currentUser);
-    } catch (error) {
-      console.log("User not authenticated");
-    }
-  };
 
   const handleContractAction = async (contractId, actionId) => {
     const contract = contracts.find(c => c.id === contractId);

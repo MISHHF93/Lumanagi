@@ -1,23 +1,22 @@
 
 import React, { useState, useEffect } from "react";
-import { Alert as AlertEntity, AdminLog, User } from "@/api/entities";
+import { Alert as AlertEntity, AdminLog } from "@/api/entities";
 import GlassCard from "../components/GlassCard";
 import { Bell, CheckCircle2, AlertTriangle, XCircle, Clock, Flag } from "lucide-react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/contexts/AuthProvider";
 
 export default function Alerts() {
   const [alerts, setAlerts] = useState([]);
   const [filter, setFilter] = useState("all");
-  const [user, setUser] = useState(null);
   const [processing, setProcessing] = useState(null);
   const { user } = useAuth();
 
   useEffect(() => {
     loadAlerts();
-    loadUser();
   }, []);
 
   const loadAlerts = async () => {

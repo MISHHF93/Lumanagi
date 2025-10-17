@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/contexts/AuthProvider";
 
 export default function Dashboard() {
   const [contracts, setContracts] = useState([]);
@@ -23,7 +24,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadData();
-    loadUser();
   }, []);
 
   const loadData = async () => {
